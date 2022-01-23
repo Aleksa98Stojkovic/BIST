@@ -16,10 +16,10 @@ entity Data_Generator is
             data_width : natural := 32
         );
     Port(
-            clk_i, rst_i : in std_logic;
-            ce_dg_i : in std_logic;
+            clk_i, rst_i : in std_logic; 
+            ce_dg_i, sel_bg_dg : in std_logic;
             bg_i : in std_logic_vector(data_width - 1 downto 0);
-            bg_o, bg_inv_o : out std_logic_vector(data_width - 1 downto 0)  
+            bg_o, bg_inv_o, wdata_o : out std_logic_vector(data_width - 1 downto 0)  
         );
 end Data_Generator;
 
@@ -45,5 +45,7 @@ end process;
 
 bg_o <= bg_reg;
 bg_inv_o <= not bg_reg;
+wdata_o <= bg_reg when sel_bg_dg = '1' else
+           not bg_reg;
 
 end Behavioral;

@@ -36,7 +36,6 @@ signal mux, mux_fsm : std_logic_vector(PC_width - 1 downto 0);
 signal and_gate : std_logic;
 signal inc : std_logic_vector(PC_width - 1 downto 0);
 signal comp_zero : std_logic;
-
 begin
 
 Registers: process(clk_i)
@@ -47,8 +46,7 @@ begin
             ba_reg <= (others => '0');
             brench_reg <= '0';
         else
-            
-            pc_reg <= pc_next;            
+            pc_reg <= pc_next;    
             if(ce_ba_ic_i = '1') then
                 ba_reg <= ba_next;
             end if;
