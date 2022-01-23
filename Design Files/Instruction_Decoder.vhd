@@ -26,7 +26,7 @@ end Instruction_Decoder;
 
 architecture Behavioral of Instruction_Decoder is
 
-component Dual_Port_Memory is
+component Microinstruction_Memory is
     generic(
                 data_width : natural := 4;
                 address_width : natural := 4
@@ -59,7 +59,7 @@ begin
     end if;
 end process;
 
-MicroMemory: Dual_Port_memory
+MicroMemory: Microinstruction_Memory
     generic map(data_width => data_width, address_width => address_width)
     port map(clk_i => clk_i, address_A_i => (others => '0'), address_B_i => mux, write_en_A_i => '0', 
              wdata_A_i => (others => '0'), rdata_A_i => open, rdata_B_i => ctrl);
