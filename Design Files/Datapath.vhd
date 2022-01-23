@@ -24,19 +24,19 @@ entity Datapath is
         clk_i : in std_logic;
         rst_i : in std_logic;
        
-        rdata_i : in std_logic_vector(data_width - 1 downto 0);
-        sel_pc_ic_i : in std_logic;        -- FSM  
+        rdata_i         : in std_logic_vector(data_width - 1 downto 0);
+        sel_pc_ic_i     : in std_logic;        -- FSM  
         inst_mem_data_i : in std_logic_vector(address_width - 1 downto 0);
-        write_en_RF_i : in std_logic;
-        waddress_RF_i : in std_logic_vector(address_width - 1 downto 0);
-        wdata_RF_i : in std_logic_vector(data_width - 1 downto 0);
+        write_en_RF_i   : in std_logic;
+        waddress_RF_i   : in std_logic_vector(address_width - 1 downto 0);
+        wdata_RF_i      : in std_logic_vector(data_width - 1 downto 0);
                 
-        write_en_o : out std_logic;
-        address_o : out std_logic_vector(counter_width - 1 downto 0);
-        is_eq_o : out std_logic;          -- FSM                                   
-        pc_o : out std_logic_vector(PC_width - 1 downto 0);
-        comp_pc_o : out std_logic;        -- FSM  
-        wdata_o : out std_logic_vector(data_width - 1 downto 0)
+        write_en_o      : out std_logic;
+        address_o       : out std_logic_vector(counter_width - 1 downto 0);
+        is_eq_o         : out std_logic;        -- FSM                                   
+        pc_o            : out std_logic_vector(PC_width - 1 downto 0);
+        comp_pc_o       : out std_logic;        -- FSM  
+        wdata_o         : out std_logic_vector(data_width - 1 downto 0)
     );
 end Datapath;
 
