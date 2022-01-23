@@ -15,7 +15,7 @@ use IEEE.NUMERIC_STD.ALL;
 entity Instruction_Decoder is
     Generic(
             address_width : natural := 4;
-            data_width : natural := 12
+            data_width : natural := 14
         );
     Port(
             clk_i, rst_i : in std_logic;

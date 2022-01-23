@@ -15,7 +15,7 @@ use IEEE.NUMERIC_STD.ALL;
 entity Top is
     Generic(
         data_width        : natural := 32;
-        instruction_width : natural := 13;
+        instruction_width : natural := 14;
         address_width     : natural := 4;
         PC_width          : natural := 8;
         counter_width     : natural := 16
@@ -51,7 +51,7 @@ architecture Behavioral of Top is
 component Datapath is
     Generic(
         data_width        : natural := 32;
-        instruction_width : natural := 13;
+        instruction_width : natural := 14;
         address_width     : natural := 4;
         PC_width          : natural := 8;
         counter_width     : natural := 16

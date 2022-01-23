@@ -25,7 +25,7 @@ end Data_Generator;
 
 architecture Behavioral of Data_Generator is
 
-signal bg_reg : std_logic_vector(data_width - 1 downto 0);
+signal bg_reg : std_logic_vector(data_width - 1 downto 0) := (others => '0');
 
 begin
 
@@ -34,6 +34,7 @@ begin
     if(rising_edge(clk_i)) then
         if(rst_i = '1') then
             bg_reg <= (others => '0');
+            --bg_reg <= X"0000FFFF";
         else
             bg_reg <= bg_reg;
             if(ce_dg_i = '1') then

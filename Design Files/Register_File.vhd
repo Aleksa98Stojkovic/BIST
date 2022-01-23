@@ -28,7 +28,23 @@ end Register_File;
 architecture Behavioral of Register_File is
 
 type matrix_type is array(0 to 2 ** address_width - 1) of std_logic_vector(data_width - 1 downto 0);
-signal reg_file : matrix_type := (others => (others => '0'));
+signal reg_file : matrix_type := (X"F0F0F0F0",
+                                  X"FFFF0000",
+                                  X"FF00FF00",
+                                  X"F000000F",
+                                  X"0F0000F0",
+                                  X"00000000",
+                                  X"F0000000",
+                                  X"0F000000",
+                                  X"00F00000",
+                                  X"000F0000",
+                                  X"0000F000",
+                                  X"00000F00",
+                                  X"000000F0",
+                                  X"0000000F",
+                                  X"FFF0FFF0",
+                                  X"00FF00FF"
+                                  );
 
 begin
 

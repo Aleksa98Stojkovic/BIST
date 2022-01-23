@@ -60,7 +60,7 @@ begin
             if(comp_pc_i = '1') then
                 next_state <= IDLE;
             else
-                if(is_eq_i = '1') then
+                if(is_eq_i = '0') then
                     next_state <= STOP;
                 end if;
             end if;

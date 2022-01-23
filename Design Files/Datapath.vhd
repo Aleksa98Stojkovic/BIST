@@ -15,7 +15,7 @@ use IEEE.NUMERIC_STD.ALL;
 entity Datapath is
     Generic(
         data_width        : natural := 32;
-        instruction_width : natural := 13;
+        instruction_width : natural := 14;
         address_width     : natural := 4;
         PC_width          : natural := 8;
         counter_width     : natural := 16
@@ -82,7 +82,7 @@ component Response_Analyzer is
         );
     Port(
             rdata_i : in std_logic_vector(data_width - 1 downto 0);
-            sel_bg_ra_i : in std_logic;
+            sel_bg_ra_i, sel_comp_ra_i : in std_logic;
             bg_i, bg_inv_i : in std_logic_vector(data_width - 1 downto 0);
             is_eq_o : out std_logic
         );
@@ -182,6 +182,7 @@ resp_analyzer: Response_Analyzer
     port map(
         rdata_i => rdata_i,
         sel_bg_ra_i => ctrl_s(4),
+        sel_comp_ra_i => ctrl_s(13),
         bg_i => bg_gen_s,
         bg_inv_i => bg_gen_inv_s,
         is_eq_o => is_eq_o
