@@ -15,9 +15,8 @@ use IEEE.NUMERIC_STD.ALL;
 entity Datapath is
     Generic(
         data_width        : natural := 32;
-        instruction_width : natural := 11;
+        instruction_width : natural := 14;
         address_width     : natural := 4;
-        inst_mem_width    : natural := 12;
         PC_width          : natural := 8;
         counter_width     : natural := 16
     );
@@ -27,7 +26,7 @@ entity Datapath is
        
         rdata_i         : in std_logic_vector(data_width - 1 downto 0);
         sel_pc_ic_i     : in std_logic;        -- FSM  
-        inst_mem_data_i : in std_logic_vector(inst_mem_width - 1 downto 0);
+        inst_mem_data_i : in std_logic_vector(address_width - 1 downto 0);
         write_en_RF_i   : in std_logic;
         waddress_RF_i   : in std_logic_vector(address_width - 1 downto 0);
         wdata_RF_i      : in std_logic_vector(data_width - 1 downto 0);
@@ -95,12 +94,10 @@ component Instruction_Counter is
         );
     Port(
             clk_i, rst_i : in std_logic;
-            and_ic_i : in std_logic;
+            ce_ba_ic_i, and_ic_i, ce_comp_ic_i : in std_logic;
             sel_pc_ic_i : in std_logic;
             comp_ag_i : in std_logic;
-            rdata_i : in std_logic_vector(PC_width - 1 downto 0);
-            branch_stall_i : in std_logic;
-            sel_stall_o : out std_logic;
+            rdata_i : in std_logic_vector(PC_width / 2 - 1 downto 0);
             pc_o : out std_logic_vector(PC_width - 1 downto 0);
             comp_pc_o : out std_logic
         );
@@ -109,12 +106,11 @@ end component;
 component Instruction_Decoder is
     Generic(
             address_width : natural := 4;
-            data_width : natural := 15
+            data_width : natural := 12
         );
     Port(
             clk_i, rst_i : in std_logic;
             rdata_i : in std_logic_vector(address_width - 1 downto 0);
-            sel_stall_i : in std_logic;
             ctrl_o : out std_logic_vector(data_width - 1 downto 0)
         );
 end component;
@@ -139,14 +135,12 @@ signal ctrl_s : std_logic_vector(instruction_width - 1 downto 0);
 signal write_en_s : std_logic;
 signal bg_s, bg_gen_s, bg_gen_inv_s : std_logic_vector(data_width - 1 downto 0);
 signal comp_ag_s : std_logic;
-signal last_addr_s : std_logic_vector(address_width - 1 downto 0);
-signal sel_stall_s : std_logic;
 
 begin
 
 ctrl_signal_gen: Control_Signal_Generator
     port map(
-        write_en_csg_i => ctrl_s(8),
+        write_en_csg_i => ctrl_s(11),
         write_en_o => write_en_o  
     );
 
@@ -157,8 +151,8 @@ data_gen: Data_Generator
     port map(
         clk_i => clk_i,
         rst_i => rst_i,
-        ce_dg_i => ctrl_s(7),
-        sel_bg_dg => ctrl_s(9),
+        ce_dg_i => ctrl_s(10),
+        sel_bg_dg => ctrl_s(12),
         bg_i => bg_s,
         bg_o => bg_gen_s,
         bg_inv_o => bg_gen_inv_s,
@@ -172,11 +166,11 @@ address_gen: Address_Generator
     port map(
         clk_i => clk_i,
         rst_i => rst_i,
-        up_down_ag_i => ctrl_s(6),
-        load_en_ag_i => ctrl_s(4),
-        ce_ag_i => ctrl_s(5),
-        sel_load_ag_i => ctrl_s(3),
-        sel_ag_i => ctrl_s(2),
+        up_down_ag_i => ctrl_s(9),
+        load_en_ag_i => ctrl_s(7),
+        ce_ag_i => ctrl_s(8),
+        sel_load_ag_i => ctrl_s(6),
+        sel_ag_i => ctrl_s(5),
         address_o => address_o,
         comp_ag_o => comp_ag_s
     );
@@ -187,8 +181,8 @@ resp_analyzer: Response_Analyzer
     )
     port map(
         rdata_i => rdata_i,
-        sel_bg_ra_i => ctrl_s(1),
-        sel_comp_ra_i => ctrl_s(10),
+        sel_bg_ra_i => ctrl_s(4),
+        sel_comp_ra_i => ctrl_s(13),
         bg_i => bg_gen_s,
         bg_inv_i => bg_gen_inv_s,
         is_eq_o => is_eq_o
@@ -201,12 +195,12 @@ instruction_cnt: Instruction_Counter
     port map(
         clk_i => clk_i,
         rst_i => rst_i,
-        and_ic_i => ctrl_s(0),
+        ce_ba_ic_i => ctrl_s(3),
+        and_ic_i => ctrl_s(2),
+        ce_comp_ic_i => ctrl_s(1),
         sel_pc_ic_i => sel_pc_ic_i,
         comp_ag_i => comp_ag_s,
-        rdata_i => inst_mem_data_i(11 downto 4),
-        branch_stall_i => ctrl_s(0),
-        sel_stall_o => sel_stall_s,
+        rdata_i => inst_mem_data_i,
         pc_o => pc_o, 
         comp_pc_o => comp_pc_o 
     );
@@ -219,9 +213,8 @@ instruction_dec: Instruction_Decoder
     port map(
         clk_i => clk_i,
         rst_i => rst_i,
-        rdata_i => inst_mem_data_i(3 downto 0), 
-        ctrl_o => ctrl_s,
-        sel_stall_i => sel_stall_s
+        rdata_i => inst_mem_data_i, 
+        ctrl_o => ctrl_s
     );
 
 reg_file: Register_File
@@ -233,7 +226,7 @@ reg_file: Register_File
         clk_i => clk_i,
         rst_i => rst_i,
         write_en_i => write_en_RF_i,
-        raddress_i => inst_mem_data_i(7 downto 4),
+        raddress_i => inst_mem_data_i,
         waddress_i => waddress_RF_i,
         wdata_i => wdata_RF_i,
         rdata_o => bg_s

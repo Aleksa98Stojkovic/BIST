@@ -1,9 +1,9 @@
 ----------------------------------------------------------------------------------
 -- Faculty: Faculty of Technical Sciences 
 -- Engineers: Aleksa Stojkovic, Boris Radovanovic 
---
--- Create Date: 01/23/2022 03:14:49 PM
--- Design Name: Microinstruction_Memory
+-- 
+-- Create Date: 01/22/2022 12:21:57 PM
+-- Design Name: Dual_Port_Meomory
 ----------------------------------------------------------------------------------
 
 
@@ -11,9 +11,9 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.all;
 
-entity Microinstruction_Memory is
+entity Dual_Port_Memory is
     generic(
-                data_width : natural := 11;
+                data_width : natural := 4;
                 address_width : natural := 4
             );
     Port(
@@ -23,28 +23,12 @@ entity Microinstruction_Memory is
             wdata_A_i : in std_logic_vector(data_width - 1 downto 0);
             rdata_A_i, rdata_B_i : out std_logic_vector(data_width - 1 downto 0)
          );
-end Microinstruction_Memory;
+end Dual_Port_Memory;
 
-architecture Behavioral of Microinstruction_Memory is
+architecture Behavioral of Dual_Port_Memory is
 
 type matrix_type is array(0 to 2 ** address_width - 1) of std_logic_vector(data_width - 1 downto 0);
-signal memory : matrix_type := ("00000000000",
-                                "01100000000",
-                                "00100000000",
-                                "10000000010",
-                                "10000000000",
-                                "00001100000",
-                                "00000100000",
-                                "00000111000",
-                                "00000110000",
-                                "00010000000",
-                                "00000000101",
-                                "00000000001",
-                                "00000000000",
-                                "00000000000",
-                                "00000000000",
-                                "00000000000"
-                                );
+signal memory : matrix_type := (others => (others => '0'));
 
 begin
 

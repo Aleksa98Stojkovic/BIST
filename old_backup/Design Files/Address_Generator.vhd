@@ -58,10 +58,10 @@ begin
 end process;
 
 -- Zašto ?ubre generiše ROM umesto komparatora?
-comp_zero <= '0' when counter = zeros else
-             '1';
-comp_max <= '0' when counter = ones else
-            '1';
+comp_zero <= '1' when counter = zeros else
+             '0';
+comp_max <= '1' when counter = ones else
+            '0';
 
 mux_load <= zeros when sel_load_ag_i = '1' else
             ones;

@@ -15,12 +15,11 @@ use IEEE.NUMERIC_STD.ALL;
 entity Instruction_Decoder is
     Generic(
             address_width : natural := 4;
-            data_width : natural := 15
+            data_width : natural := 14
         );
     Port(
             clk_i, rst_i : in std_logic;
             rdata_i : in std_logic_vector(address_width - 1 downto 0);
-            sel_stall_i : in std_logic;
             ctrl_o : out std_logic_vector(data_width - 1 downto 0)
         );
 end Instruction_Decoder;
@@ -41,22 +40,35 @@ component Microinstruction_Memory is
          );
 end component;
 
-signal mux : std_logic_vector(data_width - 1 downto 0);
-signal mux_in : std_logic_vector(address_width - 1 downto 0);
-signal ctrl_s : std_logic_vector(data_width - 1 downto 0);
+signal mux : std_logic_vector(address_width - 1 downto 0);
+signal ctrl : std_logic_vector(data_width - 1 downto 0);
+signal add : std_logic_vector(address_width - 1 downto 0);
+signal last_addr : std_logic_vector(address_width - 1 downto 0);
+signal combine : std_logic_vector(1 downto 0);
 
 begin
 
+Reg: process(clk_i)
+begin
+    if(rising_edge(clk_i)) then
+        if(rst_i = '1') then
+            last_addr <= (others => '0');
+        else
+            last_addr <= rdata_i;
+        end if;
+    end if;
+end process;
+
 MicroMemory: Microinstruction_Memory
     generic map(data_width => data_width, address_width => address_width)
-    port map(clk_i => clk_i, address_A_i => (others => '0'), address_B_i => mux_in, write_en_A_i => '0', 
-             wdata_A_i => (others => '0'), rdata_A_i => open, rdata_B_i => ctrl_s);
+    port map(clk_i => clk_i, address_A_i => (others => '0'), address_B_i => mux, write_en_A_i => '0', 
+             wdata_A_i => (others => '0'), rdata_A_i => open, rdata_B_i => ctrl);
 
-mux <= ctrl_s when sel_stall_i = '0' else
-       (others => '0');
-mux_in <= rdata_i when sel_stall_i = '0' else
-          (others => '0');      
-       
-ctrl_o <= mux;
+ctrl_o <= ctrl;
+combine <= '0' & ctrl(5);
+-- Kako se mapira ova jedinica na carry bit?
+add <= std_logic_vector(unsigned(last_addr) + unsigned(combine) + 1);
+mux <= rdata_i when ctrl(0) = '0' else
+       add;
 
 end Behavioral;

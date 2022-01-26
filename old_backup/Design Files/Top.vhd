@@ -15,11 +15,10 @@ use IEEE.NUMERIC_STD.ALL;
 entity Top is
     Generic(
         data_width        : natural := 32;
-        instruction_width : natural := 11;
+        instruction_width : natural := 14;
         address_width     : natural := 4;
-        inst_mem_width    : natural := 12;
         PC_width          : natural := 8;
-        counter_width     : natural := 4
+        counter_width     : natural := 16
     );
     Port ( 
         -- clock & reset
@@ -28,7 +27,7 @@ entity Top is
         
         -- Datapath inputs
         rdata_i         : in std_logic_vector(data_width - 1 downto 0);
-        inst_mem_data_i : in std_logic_vector(inst_mem_width - 1 downto 0);
+        inst_mem_data_i : in std_logic_vector(address_width - 1 downto 0);
         write_en_RF_i   : in std_logic;
         waddress_RF_i   : in std_logic_vector(address_width - 1 downto 0);
         wdata_RF_i      : in std_logic_vector(data_width - 1 downto 0);
@@ -52,9 +51,8 @@ architecture Behavioral of Top is
 component Datapath is
     Generic(
         data_width        : natural := 32;
-        instruction_width : natural := 11;
+        instruction_width : natural := 14;
         address_width     : natural := 4;
-        inst_mem_width    : natural := 12;
         PC_width          : natural := 8;
         counter_width     : natural := 16
     );
@@ -64,7 +62,7 @@ component Datapath is
        
         rdata_i         : in std_logic_vector(data_width - 1 downto 0);
         sel_pc_ic_i     : in std_logic;        -- FSM  
-        inst_mem_data_i : in std_logic_vector(inst_mem_width - 1 downto 0);
+        inst_mem_data_i : in std_logic_vector(address_width - 1 downto 0);
         write_en_RF_i   : in std_logic;
         waddress_RF_i   : in std_logic_vector(address_width - 1 downto 0);
         wdata_RF_i      : in std_logic_vector(data_width - 1 downto 0);
@@ -102,7 +100,6 @@ datapth: Datapath
         data_width        => data_width,
         instruction_width => instruction_width,
         address_width     => address_width,
-        inst_mem_width    => inst_mem_width,
         PC_width          => PC_width,
         counter_width     => counter_width
     )

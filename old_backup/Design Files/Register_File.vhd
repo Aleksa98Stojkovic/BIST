@@ -45,7 +45,6 @@ signal reg_file : matrix_type := (X"F0F0F0F0",
                                   X"FFF0FFF0",
                                   X"00FF00FF"
                                   );
-signal addr_next, addr_reg : std_logic_vector(address_width - 1 downto 0);
 
 begin
 
@@ -53,37 +52,15 @@ begin
     begin
         if(rising_edge(clk_i)) then
             if(rst_i = '1') then
-                --reg_file <= (others => (others => '0'));
-                reg_file <=  (X"F0F0F0F0",
-                              X"FFFF0000",
-                              X"FF00FF00",
-                              X"F000000F",
-                              X"0F0000F0",
-                              X"000F0000",
-                              X"F0000000",
-                              X"0F000000",
-                              X"00F00000",
-                              X"000F0000",
-                              X"0000F000",
-                              X"00000F00",
-                              X"000000F0",
-                              X"0000000F",
-                              X"FFF0FFF0",
-                              X"00FF00FF"
-                              );
-                addr_reg <= (others => '0');
+                reg_file <= (others => (others => '0'));
             else
                 if(write_en_i = '1') then
                     reg_file(to_integer(unsigned(waddress_i))) <= wdata_i;
                 end if;
-                
-                addr_reg <= addr_next;
             end if;
         end if;
     end process;
     
-    rdata_o <= reg_file(to_integer(unsigned(addr_reg)));
-    addr_next <= raddress_i;
-    
+    rdata_o <= reg_file(to_integer(unsigned(raddress_i)));
     
 end Behavioral;

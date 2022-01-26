@@ -42,7 +42,7 @@ component Top is
     );
 end component;
 
-signal clk : std_logic;
+signal clk : std_logic := '0';
 signal rst, write_en_RF, write_en, start, busy, restart, rdy : std_logic;
 signal rdata, wdata_RF, wdata : std_logic_vector(31 downto 0);
 signal inst_mem_data, waddress_RF : std_logic_vector(3 downto 0);
@@ -86,8 +86,8 @@ port map(
 
 clk_gen: process 
 begin
-    clk <= '0', '1' after 100ns;
-    wait for 200ns;
+    clk <= not clk;
+    wait for 100ns;
 end process;
 
 data_gen: process
@@ -105,7 +105,7 @@ begin
     wdata_RF <= (others => '0');
     
     -- Instruction Memory --
-    inst_mem_data <= "0101", "1001" after 1100ns, "0011" after 1300ns, "0000" after 1500ns;
+    inst_mem_data <= "0101", "1011" after 900ns, "1000" after 1100ns; -- BNZ
     
     -- Control Signals --
     start <= '0', '1' after 900ns, '0' after 1100ns;

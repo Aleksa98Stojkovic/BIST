@@ -17,12 +17,10 @@ entity Instruction_Counter is
         );
     Port(
             clk_i, rst_i : in std_logic;
-            and_ic_i : in std_logic;
+            ce_ba_ic_i, and_ic_i, ce_comp_ic_i : in std_logic;
             sel_pc_ic_i : in std_logic;
             comp_ag_i : in std_logic;
-            rdata_i : in std_logic_vector(PC_width - 1 downto 0);
-            branch_stall_i : in std_logic;
-            sel_stall_o : out std_logic;
+            rdata_i : in std_logic_vector(PC_width / 2 - 1 downto 0);
             pc_o : out std_logic_vector(PC_width - 1 downto 0);
             comp_pc_o : out std_logic
         );
@@ -31,14 +29,13 @@ end Instruction_Counter;
 architecture Behavioral of Instruction_Counter is
 
 signal pc_reg, pc_next : std_logic_vector(PC_width - 1 downto 0);
-signal rdata_reg, rdata_next : std_logic_vector(PC_width - 1 downto 0);
-signal branch_stall_reg, branch_stall_next : std_logic;
+signal ba_reg, ba_next : std_logic_vector(PC_width / 2 - 1 downto 0);
+signal brench_reg, brench_next : std_logic;
 
 signal mux, mux_fsm : std_logic_vector(PC_width - 1 downto 0);
 signal and_gate : std_logic;
 signal inc : std_logic_vector(PC_width - 1 downto 0);
 signal comp_zero : std_logic;
-
 begin
 
 Registers: process(clk_i)
@@ -46,31 +43,33 @@ begin
     if(rising_edge(clk_i)) then
         if(rst_i = '1') then
             pc_reg <= (others => '0');
-            rdata_reg <= (others => '0');
-            branch_stall_reg <= '0';
+            ba_reg <= (others => '0');
+            brench_reg <= '0';
         else
-            pc_reg <= pc_next;  
-            rdata_reg <= rdata_next;
-            branch_stall_reg <= branch_stall_next;
+            pc_reg <= pc_next;    
+            if(ce_ba_ic_i = '1') then
+                ba_reg <= ba_next;
+            end if;
+            if(ce_comp_ic_i = '1') then
+                brench_reg <= brench_next;
+            end if;
         end if;
     end if;        
 end process;
 
+ba_next <= rdata_i;
 pc_next <= mux_fsm;
-and_gate <= comp_ag_i and and_ic_i;
-
+brench_next <= comp_ag_i;
+and_gate <= brench_reg and and_ic_i;
 inc <= std_logic_vector(unsigned(pc_reg) + 1);
 comp_zero <= '1' when pc_reg = std_logic_vector(to_unsigned(0, pc_reg'length)) else
              '0';
 mux <= inc when and_gate = '0' else
-       rdata_reg; 
+       rdata_i & ba_reg; 
 mux_fsm <= mux when sel_pc_ic_i = '1' else
            (others => '0');
        
 comp_pc_o <= comp_zero;
 pc_o <= pc_reg;
-rdata_next <= rdata_i;
-branch_stall_next <= branch_stall_i;
-sel_stall_o <= branch_stall_reg;
 
 end Behavioral;

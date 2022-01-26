@@ -13,7 +13,7 @@ use IEEE.NUMERIC_STD.all;
 
 entity Microinstruction_Memory is
     generic(
-                data_width : natural := 11;
+                data_width : natural := 14;
                 address_width : natural := 4
             );
     Port(
@@ -28,22 +28,22 @@ end Microinstruction_Memory;
 architecture Behavioral of Microinstruction_Memory is
 
 type matrix_type is array(0 to 2 ** address_width - 1) of std_logic_vector(data_width - 1 downto 0);
-signal memory : matrix_type := ("00000000000",
-                                "01100000000",
-                                "00100000000",
-                                "10000000010",
-                                "10000000000",
-                                "00001100000",
-                                "00000100000",
-                                "00000111000",
-                                "00000110000",
-                                "00010000000",
-                                "00000000101",
-                                "00000000001",
-                                "00000000000",
-                                "00000000000",
-                                "00000000000",
-                                "00000000000"
+signal memory : matrix_type := ("00000000000000",
+                                "01100000000000",
+                                "00100000000000",
+                                "10000000010000",
+                                "10000000000000",
+                                "00001100000000",
+                                "00000100000000",
+                                "00000111000000",
+                                "00000110000000",
+                                "00000000000001",
+                                "00010000000000",
+                                "00000000100011",
+                                "00000000000011",
+                                "00000000001001",
+                                "00000000000100",
+                                "00000000000000"
                                 );
 
 begin
