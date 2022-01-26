@@ -21,8 +21,6 @@ entity Instruction_Counter is
             sel_pc_ic_i : in std_logic;
             comp_ag_i : in std_logic;
             rdata_i : in std_logic_vector(PC_width - 1 downto 0);
-            branch_stall_i : in std_logic;
-            sel_stall_o : out std_logic;
             pc_o : out std_logic_vector(PC_width - 1 downto 0);
             comp_pc_o : out std_logic
         );
@@ -32,7 +30,6 @@ architecture Behavioral of Instruction_Counter is
 
 signal pc_reg, pc_next : std_logic_vector(PC_width - 1 downto 0);
 signal rdata_reg, rdata_next : std_logic_vector(PC_width - 1 downto 0);
-signal branch_stall_reg, branch_stall_next : std_logic;
 
 signal mux, mux_fsm : std_logic_vector(PC_width - 1 downto 0);
 signal and_gate : std_logic;
@@ -47,11 +44,9 @@ begin
         if(rst_i = '1') then
             pc_reg <= (others => '0');
             rdata_reg <= (others => '0');
-            branch_stall_reg <= '0';
         else
             pc_reg <= pc_next;  
             rdata_reg <= rdata_next;
-            branch_stall_reg <= branch_stall_next;
         end if;
     end if;        
 end process;
@@ -70,7 +65,5 @@ mux_fsm <= mux when sel_pc_ic_i = '1' else
 comp_pc_o <= comp_zero;
 pc_o <= pc_reg;
 rdata_next <= rdata_i;
-branch_stall_next <= branch_stall_i;
-sel_stall_o <= branch_stall_reg;
 
 end Behavioral;

@@ -99,8 +99,6 @@ component Instruction_Counter is
             sel_pc_ic_i : in std_logic;
             comp_ag_i : in std_logic;
             rdata_i : in std_logic_vector(PC_width - 1 downto 0);
-            branch_stall_i : in std_logic;
-            sel_stall_o : out std_logic;
             pc_o : out std_logic_vector(PC_width - 1 downto 0);
             comp_pc_o : out std_logic
         );
@@ -114,7 +112,6 @@ component Instruction_Decoder is
     Port(
             clk_i, rst_i : in std_logic;
             rdata_i : in std_logic_vector(address_width - 1 downto 0);
-            sel_stall_i : in std_logic;
             ctrl_o : out std_logic_vector(data_width - 1 downto 0)
         );
 end component;
@@ -139,8 +136,6 @@ signal ctrl_s : std_logic_vector(instruction_width - 1 downto 0);
 signal write_en_s : std_logic;
 signal bg_s, bg_gen_s, bg_gen_inv_s : std_logic_vector(data_width - 1 downto 0);
 signal comp_ag_s : std_logic;
-signal last_addr_s : std_logic_vector(address_width - 1 downto 0);
-signal sel_stall_s : std_logic;
 
 begin
 
@@ -205,8 +200,6 @@ instruction_cnt: Instruction_Counter
         sel_pc_ic_i => sel_pc_ic_i,
         comp_ag_i => comp_ag_s,
         rdata_i => inst_mem_data_i(11 downto 4),
-        branch_stall_i => ctrl_s(0),
-        sel_stall_o => sel_stall_s,
         pc_o => pc_o, 
         comp_pc_o => comp_pc_o 
     );
@@ -220,8 +213,7 @@ instruction_dec: Instruction_Decoder
         clk_i => clk_i,
         rst_i => rst_i,
         rdata_i => inst_mem_data_i(3 downto 0), 
-        ctrl_o => ctrl_s,
-        sel_stall_i => sel_stall_s
+        ctrl_o => ctrl_s
     );
 
 reg_file: Register_File

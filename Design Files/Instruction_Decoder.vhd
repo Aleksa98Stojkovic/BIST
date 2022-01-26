@@ -20,7 +20,6 @@ entity Instruction_Decoder is
     Port(
             clk_i, rst_i : in std_logic;
             rdata_i : in std_logic_vector(address_width - 1 downto 0);
-            sel_stall_i : in std_logic;
             ctrl_o : out std_logic_vector(data_width - 1 downto 0)
         );
 end Instruction_Decoder;
@@ -41,22 +40,15 @@ component Microinstruction_Memory is
          );
 end component;
 
-signal mux : std_logic_vector(data_width - 1 downto 0);
-signal mux_in : std_logic_vector(address_width - 1 downto 0);
 signal ctrl_s : std_logic_vector(data_width - 1 downto 0);
 
 begin
 
 MicroMemory: Microinstruction_Memory
     generic map(data_width => data_width, address_width => address_width)
-    port map(clk_i => clk_i, address_A_i => (others => '0'), address_B_i => mux_in, write_en_A_i => '0', 
+    port map(clk_i => clk_i, address_A_i => (others => '0'), address_B_i => rdata_i, write_en_A_i => '0', 
              wdata_A_i => (others => '0'), rdata_A_i => open, rdata_B_i => ctrl_s);
 
-mux <= ctrl_s when sel_stall_i = '0' else
-       (others => '0');
-mux_in <= rdata_i when sel_stall_i = '0' else
-          (others => '0');      
-       
-ctrl_o <= mux;
+ctrl_o <= ctrl_s;
 
 end Behavioral;
